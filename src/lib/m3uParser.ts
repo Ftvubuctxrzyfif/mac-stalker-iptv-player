@@ -105,7 +105,7 @@ export async function fetchM3UPlaylist(url: string): Promise<M3UPlaylist> {
 /**
  * Convert parsed playlist to database format
  */
-export function playlistToDbChannels(playlist: M3UPlaylist, _playlistId: number, portalId: number) {
+export function playlistToDbChannels(playlist: M3UPlaylist, playlistId: number, portalId: number) {
   return playlist.channels.map((channel, index) => ({
     portal_id: portalId,
     playlist_id: playlistId,
@@ -124,7 +124,7 @@ export function playlistToDbChannels(playlist: M3UPlaylist, _playlistId: number,
 /**
  * Convert categories to database format
  */
-export function playlistToDbCategories(playlist: M3UPlaylist, _playlistId: number, portalId: number) {
+export function playlistToDbCategories(playlist: M3UPlaylist, portalId: number) {
   return Array.from(playlist.categories).map((category, index) => ({
     portal_id: portalId,
     category_id: category,
