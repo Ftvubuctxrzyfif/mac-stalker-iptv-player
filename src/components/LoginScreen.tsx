@@ -64,32 +64,40 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
     setIsLoading(true);
     
     try {
-      // Validate credentials before connecting
-      const response = await fetch('/api/validate-credentials', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: selectedPlaylist.type === 'mac' ? 'validateStalker' :
-                 selectedPlaylist.type === 'xtream' ? 'validateXtream' :
-                 'validateM3U',
-          macAddress: selectedPlaylist.macAddress,
-          portalUrl: selectedPlaylist.serverUrl,
-          serverUrl: selectedPlaylist.serverUrl,
-          username: selectedPlaylist.username,
-          password: selectedPlaylist.password,
-          m3uUrl: selectedPlaylist.m3uUrl,
-        }),
+      console.log('Attempting connection with:', {
+        type: selectedPlaylist.type,
+        mac: selectedPlaylist.macAddress,
+        url: selectedPlaylist.serverUrl,
       });
 
-      const result = await response.json();
+      // Validate credentials using the proper SDK
+      // @ts-ignore - SDK file exists without types
+      const functions = (await import('@/lib/shared/kliv-functions.js')).default;
+      
+      const result = await functions.post('validate-credentials', {
+        action: selectedPlaylist.type === 'mac' ? 'validateStalker' :
+               selectedPlaylist.type === 'xtream' ? 'validateXtream' :
+               'validateM3U',
+        macAddress: selectedPlaylist.macAddress,
+        portalUrl: selectedPlaylist.serverUrl,
+        serverUrl: selectedPlaylist.serverUrl,
+        username: selectedPlaylist.username,
+        password: selectedPlaylist.password,
+        m3uUrl: selectedPlaylist.m3uUrl,
+      });
+      
+      console.log('Validation result:', result);
       
       if (!result.valid) {
-        alert(`Connection failed: ${result.error}\n\nPlease check your credentials and try again.`);
+        alert(`❌ Connection Failed\n\n${result.error}\n\nPlease check your credentials and try again.`);
         setIsLoading(false);
         return;
       }
 
-      // Credentials are valid - proceed with login
+      // Credentials are valid! 
+      alert(`✅ Connected Successfully!\n\n${result.profile?.username ? 'User: ' + result.profile.username : 'Connection established'}`);
+      
+      // Mark as active and login
       const updatedPlaylists = savedPlaylists.map((p) => ({
         ...p,
         isActive: p.id === selectedPlaylist.id,
@@ -98,7 +106,8 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       
       onLogin(updatedPlaylists);
     } catch (error) {
-      alert('Failed to connect. Please check your network and try again.');
+      console.error('Connection error:', error);
+      alert(`❌ Network Error\n\n${error instanceof Error ? error.message : 'Failed to connect. Please check your network.'}`);
     } finally {
       setIsLoading(false);
     }
