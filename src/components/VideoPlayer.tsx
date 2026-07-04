@@ -104,6 +104,8 @@ export default function VideoPlayer({ streamUrl, channelName, logo }: VideoPlaye
         className="w-full h-full"
         src={streamUrl}
         poster={logo}
+        autoPlay
+        controls
         onError={(e) => {
           console.error('Stream error:', e);
           setIsLoading(false);

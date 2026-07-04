@@ -34,9 +34,12 @@ const mockCategories: Category[] = [
   { _row_id: 4, name: 'News', logo_url: undefined },
   { _row_id: 5, name: 'Entertainment', logo_url: undefined },
   { _row_id: 6, name: 'Music', logo_url: undefined },
+  { _row_id: 7, name: 'Kids', logo_url: undefined },
+  { _row_id: 8, name: 'Documentary', logo_url: undefined },
 ];
 
 const mockChannels: Channel[] = [
+  // Sports channels
   {
     _row_id: 1,
     name: 'ESPN HD',
@@ -55,12 +58,13 @@ const mockChannels: Channel[] = [
   },
   {
     _row_id: 3,
-    name: 'BBC News',
+    name: 'BT Sport',
     logo_url: undefined,
     stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '4',
+    category_id: '2',
     is_favorite: false,
   },
+  // Movies channels
   {
     _row_id: 4,
     name: 'HBO',
@@ -71,10 +75,103 @@ const mockChannels: Channel[] = [
   },
   {
     _row_id: 5,
+    name: 'Cinemax',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '3',
+    is_favorite: false,
+  },
+  // News channels
+  {
+    _row_id: 6,
+    name: 'BBC News',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '4',
+    is_favorite: false,
+  },
+  {
+    _row_id: 7,
+    name: 'CNN',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '4',
+    is_favorite: false,
+  },
+  {
+    _row_id: 8,
+    name: 'Al Jazeera',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '4',
+    is_favorite: false,
+  },
+  // Entertainment channels
+  {
+    _row_id: 9,
     name: 'MTV',
     logo_url: undefined,
     stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '5',
+    is_favorite: true,
+  },
+  {
+    _row_id: 10,
+    name: 'Comedy Central',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '5',
+    is_favorite: false,
+  },
+  // Music channels
+  {
+    _row_id: 11,
+    name: 'VH1',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
     category_id: '6',
+    is_favorite: false,
+  },
+  {
+    _row_id: 12,
+    name: 'MTV Hits',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '6',
+    is_favorite: false,
+  },
+  // Kids channels
+  {
+    _row_id: 13,
+    name: 'Cartoon Network',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '7',
+    is_favorite: false,
+  },
+  {
+    _row_id: 14,
+    name: 'Nickelodeon',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '7',
+    is_favorite: false,
+  },
+  // Documentary channels
+  {
+    _row_id: 15,
+    name: 'National Geographic',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '8',
+    is_favorite: false,
+  },
+  {
+    _row_id: 16,
+    name: 'Discovery',
+    logo_url: undefined,
+    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    category_id: '8',
     is_favorite: true,
   },
 ];
@@ -88,9 +185,11 @@ export default function LiveTv({ portalId: _portalId }: LiveTvProps) {
   const [categories] = useState<Category[]>(mockCategories);
   const [selectedPlaylist, setSelectedPlaylist] = useState(1);
 
-  const filteredChannels = channels.filter((channel) =>
-    channel.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredChannels = channels.filter((channel) => {
+    const matchesSearch = channel.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 1 || channel.category_id === selectedCategory.toString();
+    return matchesSearch && matchesCategory;
+  });
 
   const handleToggleFavorite = async (channelId: number) => {
     setChannels((prev) =>
@@ -101,6 +200,7 @@ export default function LiveTv({ portalId: _portalId }: LiveTvProps) {
   };
 
   const handlePlayChannel = (channel: Channel) => {
+    console.log('Playing channel:', channel.name, 'URL:', channel.stream_url);
     setSelectedChannel(channel);
   };
 
@@ -152,6 +252,16 @@ export default function LiveTv({ portalId: _portalId }: LiveTvProps) {
 
         {/* Channel Grid */}
         <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Category Header */}
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">
+              {categories.find((c) => c._row_id === selectedCategory)?.name || 'All Channels'}
+            </h2>
+            <span className="text-sm text-slate-400">
+              {filteredChannels.length} channels
+            </span>
+          </div>
+
           {/* Search */}
           <div className="mb-4">
             <div className="relative">
