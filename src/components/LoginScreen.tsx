@@ -56,16 +56,40 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
     setSelectedPlaylist(playlist);
   };
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     if (!selectedPlaylist) {
       return;
     }
     
     setIsLoading(true);
     
-    // Simulate connection
-    setTimeout(() => {
-      // Mark selected as active
+    try {
+      // Validate credentials before connecting
+      const response = await fetch('/api/validate-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: selectedPlaylist.type === 'mac' ? 'validateStalker' :
+                 selectedPlaylist.type === 'xtream' ? 'validateXtream' :
+                 'validateM3U',
+          macAddress: selectedPlaylist.macAddress,
+          portalUrl: selectedPlaylist.serverUrl,
+          serverUrl: selectedPlaylist.serverUrl,
+          username: selectedPlaylist.username,
+          password: selectedPlaylist.password,
+          m3uUrl: selectedPlaylist.m3uUrl,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (!result.valid) {
+        alert(`Connection failed: ${result.error}\n\nPlease check your credentials and try again.`);
+        setIsLoading(false);
+        return;
+      }
+
+      // Credentials are valid - proceed with login
       const updatedPlaylists = savedPlaylists.map((p) => ({
         ...p,
         isActive: p.id === selectedPlaylist.id,
@@ -73,8 +97,11 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       setSavedPlaylists(updatedPlaylists);
       
       onLogin(updatedPlaylists);
+    } catch (error) {
+      alert('Failed to connect. Please check your network and try again.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleAddPlaylist = () => {
