@@ -91,7 +91,7 @@ export default function HomeDashboard({ onNavigate, userInfo }: HomeDashboardPro
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
               <Tv className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-white">IPTV PLAYER</h1>
+            <h1 className="text-xl font-bold text-white">KAMEL IPTV</h1>
           </div>
 
           {/* Time */}

@@ -35,7 +35,7 @@ export default function Sidebar({ activeSection, onSectionChange, isCollapsed = 
           </div>
           {!isCollapsed && (
             <div>
-              <h1 className="font-bold text-white">IPTV Player</h1>
+              <h1 className="font-bold text-white">Kamel IPTV</h1>
               <p className="text-xs text-slate-400">Android TV</p>
             </div>
           )}
