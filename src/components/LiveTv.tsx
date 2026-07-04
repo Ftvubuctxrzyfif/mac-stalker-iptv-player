@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -26,164 +26,67 @@ interface LiveTvProps {
   portalId: number;
 }
 
-// Mock data - replace with real API calls
-const mockCategories: Category[] = [
-  { _row_id: 1, name: 'All Channels', logo_url: undefined },
-  { _row_id: 2, name: 'Sports', logo_url: undefined },
-  { _row_id: 3, name: 'Movies', logo_url: undefined },
-  { _row_id: 4, name: 'News', logo_url: undefined },
-  { _row_id: 5, name: 'Entertainment', logo_url: undefined },
-  { _row_id: 6, name: 'Music', logo_url: undefined },
-  { _row_id: 7, name: 'Kids', logo_url: undefined },
-  { _row_id: 8, name: 'Documentary', logo_url: undefined },
-];
-
-const mockChannels: Channel[] = [
-  // Sports channels
-  {
-    _row_id: 1,
-    name: 'ESPN HD',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '2',
-    is_favorite: false,
-  },
-  {
-    _row_id: 2,
-    name: 'Sky Sports',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '2',
-    is_favorite: true,
-  },
-  {
-    _row_id: 3,
-    name: 'BT Sport',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '2',
-    is_favorite: false,
-  },
-  // Movies channels
-  {
-    _row_id: 4,
-    name: 'HBO',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '3',
-    is_favorite: false,
-  },
-  {
-    _row_id: 5,
-    name: 'Cinemax',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '3',
-    is_favorite: false,
-  },
-  // News channels
-  {
-    _row_id: 6,
-    name: 'BBC News',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '4',
-    is_favorite: false,
-  },
-  {
-    _row_id: 7,
-    name: 'CNN',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '4',
-    is_favorite: false,
-  },
-  {
-    _row_id: 8,
-    name: 'Al Jazeera',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '4',
-    is_favorite: false,
-  },
-  // Entertainment channels
-  {
-    _row_id: 9,
-    name: 'MTV',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '5',
-    is_favorite: true,
-  },
-  {
-    _row_id: 10,
-    name: 'Comedy Central',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '5',
-    is_favorite: false,
-  },
-  // Music channels
-  {
-    _row_id: 11,
-    name: 'VH1',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '6',
-    is_favorite: false,
-  },
-  {
-    _row_id: 12,
-    name: 'MTV Hits',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '6',
-    is_favorite: false,
-  },
-  // Kids channels
-  {
-    _row_id: 13,
-    name: 'Cartoon Network',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '7',
-    is_favorite: false,
-  },
-  {
-    _row_id: 14,
-    name: 'Nickelodeon',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '7',
-    is_favorite: false,
-  },
-  // Documentary channels
-  {
-    _row_id: 15,
-    name: 'National Geographic',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '8',
-    is_favorite: false,
-  },
-  {
-    _row_id: 16,
-    name: 'Discovery',
-    logo_url: undefined,
-    stream_url: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    category_id: '8',
-    is_favorite: true,
-  },
-];
-
-export default function LiveTv({ portalId: _portalId }: LiveTvProps) {
+export default function LiveTv({ portalId }: LiveTvProps) {
   const [selectedCategory, setSelectedCategory] = useState<number>(1);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading] = useState(false);
-  const [channels, setChannels] = useState<Channel[]>(mockChannels);
-  const [categories] = useState<Category[]>(mockCategories);
+  const [isLoading, setIsLoading] = useState(true);
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedPlaylist, setSelectedPlaylist] = useState(1);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch real channels and categories from database/playlist
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Try to fetch from edge function
+        const response = await fetch('/api/playlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'getChannels',
+            playlistId: selectedPlaylist,
+            portalId: portalId,
+          }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.channels) {
+            setChannels(data.channels);
+          }
+        }
+        
+        // Fetch categories
+        const catResponse = await fetch('/api/playlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'getCategories',
+            portalId: portalId,
+          }),
+        });
+        
+        if (catResponse.ok) {
+          const catData = await catResponse.json();
+          if (catData.success && catData.categories) {
+            setCategories(catData.categories);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching channels:', err);
+        setError('Failed to load channels. Please add a playlist first.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [portalId, selectedPlaylist]);
 
   const filteredChannels = channels.filter((channel) => {
     const matchesSearch = channel.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -218,35 +121,40 @@ export default function LiveTv({ portalId: _portalId }: LiveTvProps) {
       )}
 
       {/* Playlist Selector */}
-      <PlaylistSelector
-        playlists={[
-          { _row_id: 1, playlist_name: 'Live Channels', is_active: true },
-          { _row_id: 2, playlist_name: 'UK Channels', is_active: false },
-        ]}
-        activePlaylistId={selectedPlaylist}
-        onPlaylistChange={setSelectedPlaylist}
-      />
+      {categories.length > 0 && (
+        <PlaylistSelector
+          playlists={[
+            { _row_id: 1, playlist_name: 'Live Channels', is_active: true },
+          ]}
+          activePlaylistId={selectedPlaylist}
+          onPlaylistChange={setSelectedPlaylist}
+        />
+      )}
 
       {/* Categories & Channel List */}
       <div className="flex-1 flex overflow-hidden px-6 pb-6 gap-4">
         {/* Categories Sidebar */}
         <ScrollArea className="w-48 border-r border-purple-500/20 pr-4">
           <div className="space-y-1 py-2">
-            {categories.map((category) => (
-              <Button
-                key={category._row_id}
-                variant="ghost"
-                onClick={() => setSelectedCategory(category._row_id)}
-                className={cn(
-                  "w-full justify-start h-12 transition-all duration-200",
-                  selectedCategory === category._row_id
-                    ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-white border border-purple-500/30"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                )}
-              >
-                {category.name}
-              </Button>
-            ))}
+            {categories.length === 0 ? (
+              <p className="text-slate-500 text-sm px-3">No categories</p>
+            ) : (
+              categories.map((category) => (
+                <Button
+                  key={category._row_id}
+                  variant="ghost"
+                  onClick={() => setSelectedCategory(category._row_id)}
+                  className={cn(
+                    "w-full justify-start h-12 transition-all duration-200",
+                    selectedCategory === category._row_id
+                      ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-white border border-purple-500/30"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  )}
+                >
+                  {category.name}
+                </Button>
+              ))
+            )}
           </div>
         </ScrollArea>
 
@@ -280,6 +188,16 @@ export default function LiveTv({ portalId: _portalId }: LiveTvProps) {
             {isLoading ? (
               <div className="flex items-center justify-center h-full">
                 <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <p className="text-red-400 mb-2">{error}</p>
+                <p className="text-sm text-slate-400">Add an M3U playlist in Settings to get started</p>
+              </div>
+            ) : filteredChannels.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <p className="text-slate-400 mb-2">No channels found</p>
+                <p className="text-sm text-slate-500">Try a different category or search term</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 pb-4">
