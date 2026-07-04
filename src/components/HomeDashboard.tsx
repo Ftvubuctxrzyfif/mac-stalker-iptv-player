@@ -28,29 +28,35 @@ export default function HomeDashboard({ onNavigate, userInfo }: HomeDashboardPro
     {
       id: 'live',
       title: 'LIVE TV',
+      subtitle: 'Watch Live Channels',
       icon: Tv,
       gradient: 'from-teal-500/20 via-emerald-500/20 to-cyan-500/20',
       borderColor: 'border-teal-500/30',
       textColor: 'text-teal-400',
-      size: 'lg'
+      size: 'lg',
+      glow: 'shadow-teal-500/20',
     },
     {
       id: 'movies',
       title: 'MOVIES',
+      subtitle: 'On-Demand Movies',
       icon: Film,
       gradient: 'from-orange-500/20 via-pink-500/20 to-red-500/20',
       borderColor: 'border-orange-500/30',
       textColor: 'text-orange-400',
-      size: 'md'
+      size: 'md',
+      glow: 'shadow-orange-500/20',
     },
     {
       id: 'series',
       title: 'SERIES',
+      subtitle: 'TV Shows & Series',
       icon: Clapperboard,
       gradient: 'from-purple-500/20 via-blue-500/20 to-indigo-500/20',
       borderColor: 'border-purple-500/30',
       textColor: 'text-purple-400',
-      size: 'md'
+      size: 'md',
+      glow: 'shadow-purple-500/20',
     }
   ];
 
@@ -126,17 +132,23 @@ export default function HomeDashboard({ onNavigate, userInfo }: HomeDashboardPro
             return (
               <Card
                 key={card.id}
-                className={`relative overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 bg-gradient-to-br ${card.gradient} border ${card.borderColor} backdrop-blur-xl`}
+                className={`relative overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl ${card.glow} bg-gradient-to-br ${card.gradient} border ${card.borderColor} backdrop-blur-xl group`}
                 onClick={() => onNavigate(card.id)}
               >
                 <div className="p-8 h-full flex flex-col items-center justify-center">
-                  <Icon className={`w-16 h-16 ${card.textColor} mb-6`} />
+                  <div className={`relative mb-6`}>
+                    <Icon className={`w-20 h-20 ${card.textColor} transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6`} />
+                    <div className={`absolute inset-0 blur-xl ${card.textColor} opacity-30 group-hover:opacity-50 transition-opacity`} />
+                  </div>
                   <h2 className={`text-3xl font-bold ${card.textColor} mb-2`}>{card.title}</h2>
+                  <p className="text-slate-400 text-sm mb-4">{card.subtitle}</p>
                   {card.size === 'lg' && (
-                    <div className="absolute bottom-4 right-4 w-20 h-20 rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center">
-                      <Tv className="w-8 h-8 text-teal-400" />
+                    <div className="absolute bottom-4 right-4 w-24 h-24 rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Tv className="w-10 h-10 text-teal-400" />
                     </div>
                   )}
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </Card>
             );
@@ -144,18 +156,18 @@ export default function HomeDashboard({ onNavigate, userInfo }: HomeDashboardPro
         </div>
 
         {/* Secondary Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {secondaryCards.map((card) => {
             const Icon = card.icon;
             return (
               <Card
                 key={card.id}
-                className={`cursor-pointer transition-all duration-300 hover:scale-105 ${card.bgColor} border ${card.borderColor} backdrop-blur-xl`}
+                className={`cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${card.bgColor} border ${card.borderColor} backdrop-blur-xl group`}
                 onClick={() => onNavigate(card.id)}
               >
-                <div className="p-4 flex items-center justify-center gap-3">
-                  <Icon className={`w-5 h-5 ${card.color}`} />
-                  <span className={`text-sm font-semibold ${card.color}`}>{card.title}</span>
+                <div className="p-6 flex items-center justify-center gap-4">
+                  <Icon className={`w-8 h-8 ${card.color} transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12`} />
+                  <span className={`text-base font-semibold ${card.color}`}>{card.title}</span>
                 </div>
               </Card>
             );

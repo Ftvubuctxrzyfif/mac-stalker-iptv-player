@@ -1,4 +1,4 @@
-import { Tv, Radio, Star, Clock, Settings, Heart } from 'lucide-react';
+import { Tv, Radio, Star, Clock, Settings, Heart, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +16,7 @@ interface Section {
 
 const sections: Section[] = [
   { id: 'live', label: 'Live TV', icon: Tv },
+  { id: 'home', label: 'Home', icon: Home },
   { id: 'favorites', label: 'Favorites', icon: Star },
   { id: 'recent', label: 'Recent', icon: Clock },
   { id: 'settings', label: 'Settings', icon: Settings },
@@ -54,14 +55,18 @@ export default function Sidebar({ activeSection, onSectionChange, isCollapsed = 
               variant="ghost"
               onClick={() => onSectionChange(section.id)}
               className={cn(
-                "w-full justify-start gap-3 h-12 transition-all duration-200",
+                "w-full justify-start gap-3 h-12 transition-all duration-200 group",
                 isActive
-                  ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-white border border-purple-500/30"
+                  ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 text-white border border-purple-500/30 shadow-lg shadow-purple-500/10"
                   : "text-slate-400 hover:text-white hover:bg-slate-800/50",
                 isCollapsed && "justify-center px-3"
               )}
             >
-              <Icon className={cn("w-5 h-5", isActive && "text-purple-400")} />
+              <Icon className={cn(
+                "w-5 h-5 transition-all duration-200",
+                isActive && "text-purple-400 scale-110",
+                !isActive && "group-hover:scale-110"
+              )} />
               {!isCollapsed && <span className="font-medium">{section.label}</span>}
             </Button>
           );
